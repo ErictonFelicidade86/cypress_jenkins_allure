@@ -1,0 +1,88 @@
+class ProductsPage {
+  visit() { cy.visit('/products') }
+
+  verifyAllProductsVisible() {
+    cy.get('.features_items').should('be.visible')
+    cy.get('h2.title').should('contain', 'All Products')
+  }
+
+  searchProduct(term) {
+    cy.get('#search_product').type(term)
+    cy.get('#submit_search').click()
+  }
+
+  verifySearchResultsVisible() {
+    cy.get('h2.title').should('contain', 'Searched Products')
+    cy.get('.features_items .col-sm-4').should('have.length.greaterThan', 0)
+  }
+
+  clickViewProduct(index = 0) {
+    cy.get('.choose a').eq(index).click()
+  }
+
+  verifyProductDetailVisible() {
+    cy.get('.product-information').within(() => {
+      cy.get('h2').should('be.visible')           // name
+      cy.get('p').contains('Category').should('be.visible')
+      cy.get('span').contains('Rs.').should('be.visible') // price
+      cy.get('p').contains('Availability').should('be.visible')
+      cy.get('p').contains('Condition').should('be.visible')
+      cy.get('p').contains('Brand').should('be.visible')
+    })
+  }
+
+  hoverAndAddToCart(index = 0) {
+    cy.get('.productinfo').eq(index).trigger('mouseover')
+    cy.get('.product-overlay .add-to-cart').eq(index).click()
+  }
+
+  clickContinueShopping() {
+    cy.get('.modal-footer').find('button').contains('Continue Shopping').click()
+  }
+
+  clickViewCart() {
+    cy.get('.modal-body a[href="/view_cart"]').click()
+  }
+
+  // Categories
+  clickCategory(category) {
+    cy.get('.left-sidebar').contains(category).click()
+  }
+
+  clickSubCategory(subCategory) {
+    cy.get('.panel-body').contains(subCategory).click()
+  }
+
+  verifyCategoryPage(text) {
+    cy.get('.features_items h2.title').should('contain', text.toUpperCase())
+  }
+
+  // Brands
+  clickBrand(brand) {
+    cy.get('.brands-name').contains(brand).click()
+  }
+
+  verifyBrandPage(brand) {
+    cy.get('.features_items h2.title').should('contain', brand.toUpperCase())
+    cy.get('.features_items .col-sm-4').should('have.length.greaterThan', 0)
+  }
+
+  // Review
+  verifyWriteReviewVisible() {
+    cy.get('#review-form').should('be.visible')
+    cy.get('a[href="#review-form"]').should('contain', 'Write Your Review')
+  }
+
+  submitReview(name, email, review) {
+    cy.get('#reviewer-name').type(name)
+    cy.get('#reviewer-email').type(email)
+    cy.get('#review').type(review)
+    cy.get('#button-review').click()
+  }
+
+  verifyReviewSuccess() {
+    cy.get('.alert-success').should('contain', 'Thank you for your review.')
+  }
+}
+
+module.exports = new ProductsPage()

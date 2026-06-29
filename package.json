@@ -1,0 +1,22 @@
+{
+  "name": "cypress-automationexercise",
+  "version": "1.0.0",
+  "description": "Automação de testes E2E e API - AutomationExercise.com",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "cy:run:ui": "cypress run --spec 'cypress/e2e/ui/**/*.cy.js'",
+    "cy:run:api": "cypress run --spec 'cypress/e2e/api/**/*.cy.js'",
+    "cy:run:smoke": "cypress run --env grepTags=smoke",
+    "allure:generate": "allure generate allure-results -o allure-report --clean",
+    "allure:open": "allure open allure-report",
+    "allure:report": "npm run allure:generate && npm run allure:open"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "cypress": "^13.6.0",
+    "@shelex/cypress-allure-plugin": "^2.40.2",
+    "@faker-js/faker": "^8.4.1",
+    "cypress-grep": "^4.1.0"
+  }
+}

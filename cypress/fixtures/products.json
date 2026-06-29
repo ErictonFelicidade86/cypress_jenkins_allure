@@ -1,0 +1,12 @@
+{
+  "search_terms": ["top", "tshirt", "jean", "dress"],
+  "first_product_id": 1,
+  "second_product_id": 2,
+  "quantity": 4,
+  "categories": {
+    "women": "Women",
+    "women_sub": "Dress",
+    "men_sub": "Tshirts"
+  },
+  "brands": ["Polo", "H&M"]
+}

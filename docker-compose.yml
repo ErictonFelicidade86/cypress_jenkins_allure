@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  cypress-ui:
+    build: .
+    container_name: cypress_ui_tests
+    environment:
+      - CYPRESS_baseUrl=https://automationexercise.com
+      - CYPRESS_allure=true
+    volumes:
+      - ./allure-results:/cypress-automation/allure-results
+      - ./cypress/screenshots:/cypress-automation/cypress/screenshots
+      - ./cypress/videos:/cypress-automation/cypress/videos
+    command: npx cypress run --spec "cypress/e2e/ui/**/*.cy.js" --browser chrome --headless
+
+  cypress-api:
+    build: .
+    container_name: cypress_api_tests
+    environment:
+      - CYPRESS_baseUrl=https://automationexercise.com
+      - CYPRESS_allure=true
+    volumes:
+      - ./allure-results:/cypress-automation/allure-results
+    command: npx cypress run --spec "cypress/e2e/api/**/*.cy.js"
+
+  allure:
+    image: frankescobar/allure-docker-service:latest
+    container_name: allure_server
+    ports:
+      - "4040:4040"
+      - "5050:5050"
+    environment:
+      - CHECK_RESULTS_EVERY_SECONDS=3
+      - KEEP_HISTORY=25
+    volumes:
+      - ./allure-results:/app/allure-results
+      - ./allure-report:/app/default-reports

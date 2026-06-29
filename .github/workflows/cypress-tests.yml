@@ -1,0 +1,200 @@
+name: Cypress E2E & API Tests → Docker Build → Jenkins Deploy
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: '0 6 * * 1-5'   # Seg-Sex às 06h UTC
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/cypress-runner
+
+jobs:
+  # ────────────────────────────────────────────────────────────
+  # JOB 1 — Testes de API (Backend)
+  # ────────────────────────────────────────────────────────────
+  api-tests:
+    name: "🔌 API Tests (Backend)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run API Tests
+        uses: cypress-io/github-action@v6
+        with:
+          spec: cypress/e2e/api/**/*.cy.js
+          browser: chrome
+        env:
+          CYPRESS_allure: true
+
+      - name: Upload Allure Results — API
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-api
+          path: allure-results/
+          retention-days: 7
+
+  # ────────────────────────────────────────────────────────────
+  # JOB 2 — Testes de UI (Frontend) em paralelo por módulo
+  # ────────────────────────────────────────────────────────────
+  ui-tests:
+    name: "🖥️ UI Tests — ${{ matrix.module }}"
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [auth, products, cart, checkout, misc]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run UI Tests — ${{ matrix.module }}
+        uses: cypress-io/github-action@v6
+        with:
+          spec: cypress/e2e/ui/${{ matrix.module }}/**/*.cy.js
+          browser: chrome
+        env:
+          CYPRESS_allure: true
+
+      - name: Upload Allure Results — UI ${{ matrix.module }}
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-ui-${{ matrix.module }}
+          path: allure-results/
+          retention-days: 7
+
+      - name: Upload Screenshots on Failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: screenshots-${{ matrix.module }}
+          path: cypress/screenshots/
+          retention-days: 3
+
+  # ────────────────────────────────────────────────────────────
+  # JOB 3 — Build & Push Docker Image (só roda se tudo passou)
+  # ────────────────────────────────────────────────────────────
+  docker-build-push:
+    name: "🐳 Build & Push Docker Image → ghcr.io"
+    runs-on: ubuntu-latest
+    needs: [api-tests, ui-tests]   # ← aguarda os dois jobs acima
+    if: success() && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      packages: write              # necessário para push no ghcr.io
+
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}   # token automático do GitHub Actions
+
+      - name: Extract Docker metadata (tags e labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-,format=short
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+
+      - name: Build e Push da imagem Docker
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Resumo do build
+        run: |
+          echo "### 🐳 Docker Image publicada com sucesso!" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** ghcr.io" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:** ${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Digest:** ${{ steps.build.outputs.digest }}" >> $GITHUB_STEP_SUMMARY
+
+  # ────────────────────────────────────────────────────────────
+  # JOB 4 — Dispara Webhook no Jenkins
+  # ────────────────────────────────────────────────────────────
+  trigger-jenkins:
+    name: "🚀 Trigger Jenkins Pipeline"
+    runs-on: ubuntu-latest
+    needs: [docker-build-push]
+    if: success()
+
+    steps:
+      - name: Disparar webhook no Jenkins
+        run: |
+          curl -s -X POST "${{ secrets.JENKINS_URL }}/job/${{ secrets.JENKINS_JOB_NAME }}/build" \
+            --user "${{ secrets.JENKINS_USER }}:${{ secrets.JENKINS_TOKEN }}" \
+            --data-urlencode json='{
+              "parameter": [
+                {"name": "DOCKER_IMAGE", "value": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"},
+                {"name": "GIT_COMMIT",   "value": "${{ github.sha }}"},
+                {"name": "TRIGGERED_BY", "value": "github-actions"}
+              ]
+            }'
+          echo "Jenkins acionado com sucesso!"
+
+      - name: Resumo do trigger
+        run: |
+          echo "### 🚀 Jenkins acionado!" >> $GITHUB_STEP_SUMMARY
+          echo "**Job:** ${{ secrets.JENKINS_JOB_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Imagem:** ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+
+  # ────────────────────────────────────────────────────────────
+  # JOB 5 — Relatório Allure do GitHub Actions (preview rápido)
+  # ────────────────────────────────────────────────────────────
+  allure-report-gh:
+    name: "📊 Allure Report (GitHub Pages)"
+    runs-on: ubuntu-latest
+    needs: [api-tests, ui-tests]
+    if: always()
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download todos os resultados Allure
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-results/
+          merge-multiple: true
+
+      - name: Gerar Allure Report
+        uses: simple-elf/allure-report-action@master
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 30
+
+      - name: Publicar no GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      - name: Link do relatório no resumo
+        run: |
+          echo "### 📊 Allure Report disponível!" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> $GITHUB_STEP_SUMMARY
