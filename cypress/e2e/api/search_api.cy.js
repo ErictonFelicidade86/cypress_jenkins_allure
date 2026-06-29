@@ -6,16 +6,18 @@ describe('API - Busca de Produtos', () => {
     Cypress.allure?.story('Busca com Parâmetro')
     Cypress.allure?.severity('critical')
 
-    cy.request({
+    cy.api({
       method: 'POST',
       url: `${apiUrl}/searchProduct`,
       form: true,
-      body: { search_product: 'top' },
+      body: { search_product: 'dress' },
+      failOnStatusCode: false,
     }).then((res) => {
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
       expect(res.status).to.eq(200)
-      expect(res.body.responseCode).to.eq(200)
-      expect(res.body).to.have.property('products')
-      expect(res.body.products).to.be.an('array').and.have.length.greaterThan(0)
+      expect(body.responseCode).to.eq(200)
+      expect(body).to.have.property('products')
+      expect(body.products).to.be.an('array').and.have.length.greaterThan(0)
     })
   })
 
@@ -24,15 +26,13 @@ describe('API - Busca de Produtos', () => {
     Cypress.allure?.story('Busca sem Parâmetro')
     Cypress.allure?.severity('normal')
 
-    cy.request({
+    cy.api({
       method: 'POST',
       url: `${apiUrl}/searchProduct`,
       form: true,
       body: {},
       failOnStatusCode: false,
     }).then((res) => {
-      expect(res.body.responseCode).to.eq(400)
-      expect(res.body.message).to.contain('search_product parameter is missing')
-    })
-  })
-})
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
+      expect(body.responseCode).to.eq(400)
+      expect(body.message).to.contain('search_product param

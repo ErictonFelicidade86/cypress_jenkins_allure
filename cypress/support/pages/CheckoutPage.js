@@ -41,7 +41,8 @@ class CheckoutPage {
   }
 
   verifyOrderSuccess() {
-    cy.get('[data-qa="order-placed"]').should('contain', 'Your order has been placed successfully!')
+    cy.url().should('include', '/payment_done')
+    cy.contains('Congratulations! Your order has been confirmed!').should('be.visible')
   }
 
   clickDownloadInvoice() {
@@ -53,4 +54,4 @@ class CheckoutPage {
   }
 }
 
-module.exports = new CheckoutPage()
+m

@@ -6,11 +6,12 @@ describe('API - Marcas', () => {
     Cypress.allure?.story('Listar Marcas')
     Cypress.allure?.severity('critical')
 
-    cy.request({ method: 'GET', url: `${apiUrl}/brandsList` }).then((res) => {
+    cy.api({ method: 'GET', url: `${apiUrl}/brandsList` }).then((res) => {
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
       expect(res.status).to.eq(200)
-      expect(res.body).to.have.property('brands')
-      expect(res.body.brands).to.be.an('array').and.have.length.greaterThan(0)
-      expect(res.body.brands[0]).to.include.keys('id', 'brand')
+      expect(body).to.have.property('brands')
+      expect(body.brands).to.be.an('array').and.have.length.greaterThan(0)
+      expect(body.brands[0]).to.include.keys('id', 'brand')
     })
   })
 
@@ -19,9 +20,10 @@ describe('API - Marcas', () => {
     Cypress.allure?.story('Método Não Suportado')
     Cypress.allure?.severity('normal')
 
-    cy.request({ method: 'PUT', url: `${apiUrl}/brandsList`, failOnStatusCode: false }).then((res) => {
-      expect(res.body.responseCode).to.eq(405)
-      expect(res.body.message).to.contain('This request method is not supported')
+    cy.api({ method: 'PUT', url: `${apiUrl}/brandsList`, failOnStatusCode: false }).then((res) => {
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
+      expect(body.responseCode).to.eq(405)
+      expect(body.message).to.contain('This request method is not supported')
     })
   })
 })

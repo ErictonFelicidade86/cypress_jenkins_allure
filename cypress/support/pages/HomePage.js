@@ -6,16 +6,19 @@ class HomePage {
     cy.get('img[alt="Website for automation practice"]').should('be.visible')
   }
 
-  clickSignupLogin() { cy.get('a[href="/login"]').click() }
+  clickSignupLogin() { cy.get('a[href="/login"]').first().click() }
   clickCart()        { cy.get('a[href="/view_cart"]').first().click() }
-  clickProducts()    { cy.get('a[href="/products"]').click() }
-  clickTestCases()   { cy.get('a[href="/test_cases"]').click() }
-  clickContactUs()   { cy.get('a[href="/contact_us"]').click() }
-  clickLogout()      { cy.get('a[href="/logout"]').click() }
-  clickDeleteAccount(){ cy.get('a[href="/delete_account"]').click() }
+  clickProducts() {
+    cy.get('a[href="/products"]').click()
+    cy.url().should('include', '/products')
+  }
+  clickTestCases()    { cy.get('a[href="/test_cases"]').first().click() }
+  clickContactUs()    { cy.get('a[href="/contact_us"]').first().click() }
+  clickLogout()       { cy.get('a[href="/logout"]').first().click() }
+  clickDeleteAccount(){ cy.get('a[href="/delete_account"]').first().click() }
 
   subscribeWithEmail(email) {
-    cy.scrollTo('bottom')
+    cy.scrollTo('bottom', { ensureScrollable: false })
     cy.get('#susbscribe_email').type(email)
     cy.get('#subscribe').click()
   }
@@ -39,9 +42,4 @@ class HomePage {
     cy.get('h2').contains('Subscription').should('be.visible')
   }
 
-  addRecommendedItemToCart() {
-    cy.get('#recommended-item-carousel').find('.add-to-cart').first().click()
-  }
-}
-
-module.exports = new HomePage()
+  addRecommendedItemToCart() 

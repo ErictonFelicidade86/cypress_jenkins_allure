@@ -35,43 +35,33 @@ class LoginPage {
 
   // ─── Account Info ────────────────────────────────────
   verifyAccountInfoVisible() {
-    cy.get('[data-qa="account-info"]').should('contain', 'ENTER ACCOUNT INFORMATION')
+    cy.contains('b', 'Enter Account Information').should('be.visible')
   }
 
   fillAccountInfo({ title = 'Mr', password, birth_date, birth_month, birth_year }) {
     cy.get(`input[value="${title}"]`).check()
-    cy.get('[data-qa="password"]').type(password)
-    cy.get('[data-qa="days"]').select(birth_date)
-    cy.get('[data-qa="months"]').select(birth_month)
-    cy.get('[data-qa="years"]').select(birth_year)
+    if (password)    cy.get('[data-qa="password"]').type(password)
+    if (birth_date)  cy.get('[data-qa="days"]').select(birth_date)
+    if (birth_month) cy.get('[data-qa="months"]').select(birth_month)
+    if (birth_year)  cy.get('[data-qa="years"]').select(birth_year)
     cy.get('#newsletter').check()
     cy.get('#optin').check()
   }
 
   fillAddressInfo({ firstname, lastname, company, address1, address2, country, state, city, zipcode, mobile_number }) {
-    cy.get('[data-qa="first_name"]').type(firstname)
-    cy.get('[data-qa="last_name"]').type(lastname)
-    cy.get('[data-qa="company"]').type(company)
-    cy.get('[data-qa="address"]').type(address1)
-    cy.get('[data-qa="address2"]').type(address2)
-    cy.get('[data-qa="country"]').select(country)
-    cy.get('[data-qa="state"]').type(state)
-    cy.get('[data-qa="city"]').type(city)
-    cy.get('[data-qa="zipcode"]').type(zipcode)
-    cy.get('[data-qa="mobile_number"]').type(mobile_number)
+    if (firstname)      cy.get('[data-qa="first_name"]').type(firstname)
+    if (lastname)       cy.get('[data-qa="last_name"]').type(lastname)
+    if (company)        cy.get('[data-qa="company"]').type(company)
+    if (address1)       cy.get('[data-qa="address"]').type(address1)
+    if (address2)       cy.get('[data-qa="address2"]').type(address2)
+    if (country)        cy.get('[data-qa="country"]').select(country)
+    if (state)          cy.get('[data-qa="state"]').type(state)
+    if (city)           cy.get('[data-qa="city"]').type(city)
+    if (zipcode)        cy.get('[data-qa="zipcode"]').type(zipcode)
+    if (mobile_number)  cy.get('[data-qa="mobile_number"]').type(mobile_number)
   }
 
   clickCreateAccount() { cy.get('[data-qa="create-account"]').click() }
 
   verifyAccountCreated() {
-    cy.get('[data-qa="account-created"]').should('contain', 'ACCOUNT CREATED!')
-  }
-
-  clickContinue() { cy.get('[data-qa="continue-button"]').click() }
-
-  verifyAccountDeleted() {
-    cy.get('[data-qa="account-deleted"]').should('contain', 'ACCOUNT DELETED!')
-  }
-}
-
-module.exports = new LoginPage()
+    cy.contains('b', 'Account Created!').should(

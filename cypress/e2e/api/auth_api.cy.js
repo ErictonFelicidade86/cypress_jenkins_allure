@@ -17,15 +17,16 @@ describe('API - Autenticação', () => {
     Cypress.allure?.story('Login Válido')
     Cypress.allure?.severity('critical')
 
-    cy.request({
+    cy.api({
       method: 'POST',
       url: `${apiUrl}/verifyLogin`,
       form: true,
       body: { email, password },
     }).then((res) => {
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
       expect(res.status).to.eq(200)
-      expect(res.body.responseCode).to.eq(200)
-      expect(res.body.message).to.eq('User exists!')
+      expect(body.responseCode).to.eq(200)
+      expect(body.message).to.eq('User exists!')
     })
   })
 
@@ -34,15 +35,16 @@ describe('API - Autenticação', () => {
     Cypress.allure?.story('Login sem Email')
     Cypress.allure?.severity('normal')
 
-    cy.request({
+    cy.api({
       method: 'POST',
       url: `${apiUrl}/verifyLogin`,
       form: true,
       body: { password },
       failOnStatusCode: false,
     }).then((res) => {
-      expect(res.body.responseCode).to.eq(400)
-      expect(res.body.message).to.contain('email or password parameter is missing')
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
+      expect(body.responseCode).to.eq(400)
+      expect(body.message).to.contain('email or password parameter is missing')
     })
   })
 
@@ -51,13 +53,14 @@ describe('API - Autenticação', () => {
     Cypress.allure?.story('Método DELETE Não Suportado')
     Cypress.allure?.severity('minor')
 
-    cy.request({
+    cy.api({
       method: 'DELETE',
       url: `${apiUrl}/verifyLogin`,
       failOnStatusCode: false,
     }).then((res) => {
-      expect(res.body.responseCode).to.eq(405)
-      expect(res.body.message).to.contain('This request method is not supported')
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
+      expect(body.responseCode).to.eq(405)
+      expect(body.message).to.contain('This request method is not supported')
     })
   })
 
@@ -66,15 +69,16 @@ describe('API - Autenticação', () => {
     Cypress.allure?.story('Login Inválido')
     Cypress.allure?.severity('normal')
 
-    cy.request({
+    cy.api({
       method: 'POST',
       url: `${apiUrl}/verifyLogin`,
       form: true,
       body: { email: 'fake@notexist.com', password: 'wrongpass' },
       failOnStatusCode: false,
     }).then((res) => {
-      expect(res.body.responseCode).to.eq(404)
-      expect(res.body.message).to.eq('User not found!')
+      const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
+      expect(body.responseCode).to.eq(404)
+      expect(body.message).to.eq('User not found!')
     })
   })
 })

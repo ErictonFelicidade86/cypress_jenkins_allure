@@ -3,7 +3,7 @@ class CartPage {
 
   verifyCartPageVisible() {
     cy.url().should('include', '/view_cart')
-    cy.get('h2').should('contain', 'Shopping Cart')
+    cy.get('#cart_info_table').should('be.visible')
   }
 
   verifyProductInCart(productName) {
@@ -44,11 +44,11 @@ class CartPage {
   }
 
   subscribeWithEmail(email) {
-    cy.scrollTo('bottom')
+    cy.scrollTo('bottom', { ensureScrollable: false })
     cy.get('#susbscribe_email').type(email)
     cy.get('#subscribe').click()
     cy.get('.alert-success').should('contain', 'You have been successfully subscribed!')
   }
 }
 
-module.exports = new CartPage()
+mod

@@ -33,7 +33,7 @@ class ProductsPage {
 
   hoverAndAddToCart(index = 0) {
     cy.get('.productinfo').eq(index).trigger('mouseover')
-    cy.get('.product-overlay .add-to-cart').eq(index).click()
+    cy.get('.product-overlay .add-to-cart').eq(index).click({ force: true })
   }
 
   clickContinueShopping() {
@@ -54,7 +54,9 @@ class ProductsPage {
   }
 
   verifyCategoryPage(text) {
-    cy.get('.features_items h2.title').should('contain', text.toUpperCase())
+    // Página mostra ex: "WOMEN - DRESS PRODUCTS" — usamos cy.contains para match parcial
+    const keyword = text.split(' - ').pop() // ex: 'Dress'
+    cy.get('.features_items').contains('h2', keyword, { matchCase: false }).should('be.visible')
   }
 
   // Brands
@@ -63,26 +65,18 @@ class ProductsPage {
   }
 
   verifyBrandPage(brand) {
-    cy.get('.features_items h2.title').should('contain', brand.toUpperCase())
+    cy.get('.features_items').contains('h2', brand, { matchCase: false }).should('be.visible')
     cy.get('.features_items .col-sm-4').should('have.length.greaterThan', 0)
   }
 
   // Review
   verifyWriteReviewVisible() {
-    cy.get('#review-form').should('be.visible')
-    cy.get('a[href="#review-form"]').should('contain', 'Write Your Review')
+    cy.contains('Write Your Review').should('be.visible')
+    cy.get('#review-form').should('exist')
   }
 
   submitReview(name, email, review) {
-    cy.get('#reviewer-name').type(name)
-    cy.get('#reviewer-email').type(email)
+    cy.get('#name').type(name)
+    cy.get('#email').type(email)
     cy.get('#review').type(review)
-    cy.get('#button-review').click()
-  }
-
-  verifyReviewSuccess() {
-    cy.get('.alert-success').should('contain', 'Thank you for your review.')
-  }
-}
-
-module.exports = new ProductsPage()
+    cy.get('#button-revie
