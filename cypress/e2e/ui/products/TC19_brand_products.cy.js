@@ -3,9 +3,9 @@ import productsPage from '../../../support/pages/ProductsPage'
 
 describe('Produtos', () => {
   it('TC19 - Visualizar produtos por marca', { tags: ['products', 'ui'] }, () => {
-    Cypress.allure.feature('Produtos')
-    Cypress.allure.story('Marcas')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('Produtos')
+    Cypress.allure?.story('Marcas')
+    Cypress.allure?.severity('normal')
 
     homePage.visit()
     homePage.clickProducts()

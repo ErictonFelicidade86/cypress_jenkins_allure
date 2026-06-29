@@ -2,9 +2,9 @@ describe('API - Produtos', () => {
   const apiUrl = Cypress.env('apiUrl')
 
   it('API01 - GET /productsList retorna 200 com lista de produtos', { tags: ['smoke', 'api', 'backend'] }, () => {
-    Cypress.allure.feature('API - Produtos')
-    Cypress.allure.story('Listar Produtos')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('API - Produtos')
+    Cypress.allure?.story('Listar Produtos')
+    Cypress.allure?.severity('critical')
 
     cy.request({ method: 'GET', url: `${apiUrl}/productsList` }).then((res) => {
       expect(res.status).to.eq(200)
@@ -15,9 +15,9 @@ describe('API - Produtos', () => {
   })
 
   it('API02 - POST /productsList retorna 405 (método não suportado)', { tags: ['api', 'backend', 'negative'] }, () => {
-    Cypress.allure.feature('API - Produtos')
-    Cypress.allure.story('Método Não Suportado')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('API - Produtos')
+    Cypress.allure?.story('Método Não Suportado')
+    Cypress.allure?.severity('normal')
 
     cy.request({ method: 'POST', url: `${apiUrl}/productsList`, failOnStatusCode: false }).then((res) => {
       expect(res.status).to.eq(200) // API retorna 200 com mensagem de erro

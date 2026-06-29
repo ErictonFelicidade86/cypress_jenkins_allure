@@ -3,9 +3,9 @@ import contactPage from '../../../support/pages/ContactPage'
 
 describe('Misc', () => {
   it('TC06 - Enviar formulário de contato', { tags: ['misc', 'ui'] }, () => {
-    Cypress.allure.feature('Contato')
-    Cypress.allure.story('Formulário de Contato')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('Contato')
+    Cypress.allure?.story('Formulário de Contato')
+    Cypress.allure?.severity('normal')
 
     homePage.visit()
     homePage.verifyPageLoaded()

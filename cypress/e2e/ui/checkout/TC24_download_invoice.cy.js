@@ -6,9 +6,9 @@ import checkoutPage from '../../../support/pages/CheckoutPage'
 
 describe('Checkout', () => {
   it('TC24 - Download de fatura após compra', { tags: ['checkout', 'ui'] }, () => {
-    Cypress.allure.feature('Checkout')
-    Cypress.allure.story('Download de Fatura')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('Checkout')
+    Cypress.allure?.story('Download de Fatura')
+    Cypress.allure?.severity('normal')
 
     const email = `testuser_${Date.now()}@test.com`
 

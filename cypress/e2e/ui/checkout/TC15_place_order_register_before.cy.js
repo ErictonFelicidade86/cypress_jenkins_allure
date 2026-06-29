@@ -6,9 +6,9 @@ import checkoutPage from '../../../support/pages/CheckoutPage'
 
 describe('Checkout', () => {
   it('TC15 - Pedido: registrar antes do checkout', { tags: ['checkout', 'ui'] }, () => {
-    Cypress.allure.feature('Checkout')
-    Cypress.allure.story('Registro Antes do Checkout')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Checkout')
+    Cypress.allure?.story('Registro Antes do Checkout')
+    Cypress.allure?.severity('critical')
 
     const email = `testuser_${Date.now()}@test.com`
 

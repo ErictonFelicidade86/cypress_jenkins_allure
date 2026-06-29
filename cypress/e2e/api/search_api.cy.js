@@ -2,9 +2,9 @@ describe('API - Busca de Produtos', () => {
   const apiUrl = Cypress.env('apiUrl')
 
   it('API05 - POST /searchProduct retorna produtos encontrados', { tags: ['smoke', 'api', 'backend'] }, () => {
-    Cypress.allure.feature('API - Busca')
-    Cypress.allure.story('Busca com Parâmetro')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('API - Busca')
+    Cypress.allure?.story('Busca com Parâmetro')
+    Cypress.allure?.severity('critical')
 
     cy.request({
       method: 'POST',
@@ -20,9 +20,9 @@ describe('API - Busca de Produtos', () => {
   })
 
   it('API06 - POST /searchProduct sem parâmetro retorna 400', { tags: ['api', 'backend', 'negative'] }, () => {
-    Cypress.allure.feature('API - Busca')
-    Cypress.allure.story('Busca sem Parâmetro')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('API - Busca')
+    Cypress.allure?.story('Busca sem Parâmetro')
+    Cypress.allure?.severity('normal')
 
     cy.request({
       method: 'POST',

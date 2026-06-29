@@ -14,9 +14,9 @@ describe('Checkout', () => {
   })
 
   it('TC16 - Pedido: login antes do checkout', { tags: ['checkout', 'ui'] }, () => {
-    Cypress.allure.feature('Checkout')
-    Cypress.allure.story('Login Antes do Checkout')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Checkout')
+    Cypress.allure?.story('Login Antes do Checkout')
+    Cypress.allure?.severity('critical')
 
     cy.loginViaUI(email, password)
 

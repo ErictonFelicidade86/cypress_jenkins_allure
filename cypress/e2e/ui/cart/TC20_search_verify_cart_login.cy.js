@@ -16,9 +16,9 @@ describe('Carrinho', () => {
   })
 
   it('TC20 - Produtos buscados permanecem no carrinho após login', { tags: ['cart', 'ui'] }, () => {
-    Cypress.allure.feature('Carrinho')
-    Cypress.allure.story('Persistência após Login')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Carrinho')
+    Cypress.allure?.story('Persistência após Login')
+    Cypress.allure?.severity('critical')
 
     homePage.visit()
     homePage.clickProducts()

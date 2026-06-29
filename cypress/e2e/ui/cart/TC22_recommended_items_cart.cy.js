@@ -3,9 +3,9 @@ import cartPage  from '../../../support/pages/CartPage'
 
 describe('Carrinho', () => {
   it('TC22 - Adicionar item recomendado ao carrinho', { tags: ['cart', 'ui'] }, () => {
-    Cypress.allure.feature('Carrinho')
-    Cypress.allure.story('Itens Recomendados')
-    Cypress.allure.severity('minor')
+    Cypress.allure?.feature('Carrinho')
+    Cypress.allure?.story('Itens Recomendados')
+    Cypress.allure?.severity('minor')
 
     homePage.visit()
     homePage.scrollToBottom()

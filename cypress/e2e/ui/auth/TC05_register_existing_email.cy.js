@@ -15,9 +15,9 @@ describe('Autenticação', () => {
   })
 
   it('TC05 - Registro com email já cadastrado', { tags: ['auth', 'ui', 'negative'] }, () => {
-    Cypress.allure.feature('Autenticação')
-    Cypress.allure.story('Registro com Email Duplicado')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('Autenticação')
+    Cypress.allure?.story('Registro com Email Duplicado')
+    Cypress.allure?.severity('normal')
 
     homePage.visit()
     homePage.clickSignupLogin()

@@ -26,9 +26,9 @@ describe('API - Conta de Usuário', () => {
   })
 
   it('API11 - POST /createAccount cria usuário com sucesso (201)', { tags: ['smoke', 'api', 'backend'] }, () => {
-    Cypress.allure.feature('API - Conta')
-    Cypress.allure.story('Criar Conta')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('API - Conta')
+    Cypress.allure?.story('Criar Conta')
+    Cypress.allure?.severity('critical')
 
     cy.request({
       method: 'POST',
@@ -46,9 +46,9 @@ describe('API - Conta de Usuário', () => {
   })
 
   it('API12 - DELETE /deleteAccount remove conta (200)', { tags: ['api', 'backend'] }, () => {
-    Cypress.allure.feature('API - Conta')
-    Cypress.allure.story('Deletar Conta')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('API - Conta')
+    Cypress.allure?.story('Deletar Conta')
+    Cypress.allure?.severity('critical')
 
     cy.createUserViaApi(email, password).then(() => {
       cy.request({
@@ -65,9 +65,9 @@ describe('API - Conta de Usuário', () => {
   })
 
   it('API13 - PUT /updateAccount atualiza dados do usuário (200)', { tags: ['api', 'backend'] }, () => {
-    Cypress.allure.feature('API - Conta')
-    Cypress.allure.story('Atualizar Conta')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('API - Conta')
+    Cypress.allure?.story('Atualizar Conta')
+    Cypress.allure?.severity('normal')
 
     cy.createUserViaApi(email, password).then(() => {
       cy.request({
@@ -86,9 +86,9 @@ describe('API - Conta de Usuário', () => {
   })
 
   it('API14 - GET /getUserDetailByEmail retorna dados do usuário (200)', { tags: ['api', 'backend'] }, () => {
-    Cypress.allure.feature('API - Conta')
-    Cypress.allure.story('Buscar Usuário por Email')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('API - Conta')
+    Cypress.allure?.story('Buscar Usuário por Email')
+    Cypress.allure?.severity('normal')
 
     cy.createUserViaApi(email, password).then(() => {
       cy.request({

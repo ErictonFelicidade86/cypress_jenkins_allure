@@ -10,9 +10,9 @@ describe('Autenticação', () => {
   })
 
   it('TC01 - Registrar novo usuário com sucesso', { tags: ['smoke', 'auth', 'ui'] }, () => {
-    Cypress.allure.feature('Autenticação')
-    Cypress.allure.story('Registro de Usuário')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Autenticação')
+    Cypress.allure?.story('Registro de Usuário')
+    Cypress.allure?.severity('critical')
 
     homePage.verifyPageLoaded()
     homePage.clickSignupLogin()

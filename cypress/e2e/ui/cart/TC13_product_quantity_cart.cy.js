@@ -3,9 +3,9 @@ import cartPage  from '../../../support/pages/CartPage'
 
 describe('Carrinho', () => {
   it('TC13 - Verificar quantidade do produto no carrinho', { tags: ['cart', 'ui'] }, () => {
-    Cypress.allure.feature('Carrinho')
-    Cypress.allure.story('Quantidade')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('Carrinho')
+    Cypress.allure?.story('Quantidade')
+    Cypress.allure?.severity('normal')
 
     homePage.visit()
     cy.get('.choose a').first().click()

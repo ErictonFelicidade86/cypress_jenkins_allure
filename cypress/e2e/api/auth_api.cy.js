@@ -13,9 +13,9 @@ describe('API - Autenticação', () => {
   })
 
   it('API07 - POST /verifyLogin com credenciais válidas retorna 200', { tags: ['smoke', 'api', 'backend'] }, () => {
-    Cypress.allure.feature('API - Autenticação')
-    Cypress.allure.story('Login Válido')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('API - Autenticação')
+    Cypress.allure?.story('Login Válido')
+    Cypress.allure?.severity('critical')
 
     cy.request({
       method: 'POST',
@@ -30,9 +30,9 @@ describe('API - Autenticação', () => {
   })
 
   it('API08 - POST /verifyLogin sem email retorna 400', { tags: ['api', 'backend', 'negative'] }, () => {
-    Cypress.allure.feature('API - Autenticação')
-    Cypress.allure.story('Login sem Email')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('API - Autenticação')
+    Cypress.allure?.story('Login sem Email')
+    Cypress.allure?.severity('normal')
 
     cy.request({
       method: 'POST',
@@ -47,9 +47,9 @@ describe('API - Autenticação', () => {
   })
 
   it('API09 - DELETE /verifyLogin retorna 405', { tags: ['api', 'backend', 'negative'] }, () => {
-    Cypress.allure.feature('API - Autenticação')
-    Cypress.allure.story('Método DELETE Não Suportado')
-    Cypress.allure.severity('minor')
+    Cypress.allure?.feature('API - Autenticação')
+    Cypress.allure?.story('Método DELETE Não Suportado')
+    Cypress.allure?.severity('minor')
 
     cy.request({
       method: 'DELETE',
@@ -62,9 +62,9 @@ describe('API - Autenticação', () => {
   })
 
   it('API10 - POST /verifyLogin com credenciais inválidas retorna 404', { tags: ['api', 'backend', 'negative'] }, () => {
-    Cypress.allure.feature('API - Autenticação')
-    Cypress.allure.story('Login Inválido')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('API - Autenticação')
+    Cypress.allure?.story('Login Inválido')
+    Cypress.allure?.severity('normal')
 
     cy.request({
       method: 'POST',

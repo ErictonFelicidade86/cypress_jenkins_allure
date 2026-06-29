@@ -6,9 +6,9 @@ import checkoutPage from '../../../support/pages/CheckoutPage'
 
 describe('Checkout', () => {
   it('TC14 - Pedido: registrar durante o checkout', { tags: ['smoke', 'checkout', 'ui'] }, () => {
-    Cypress.allure.feature('Checkout')
-    Cypress.allure.story('Registro Durante Checkout')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Checkout')
+    Cypress.allure?.story('Registro Durante Checkout')
+    Cypress.allure?.severity('critical')
 
     const email = `testuser_${Date.now()}@test.com`
 

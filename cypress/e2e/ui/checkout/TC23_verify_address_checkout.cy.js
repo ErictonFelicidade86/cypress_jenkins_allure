@@ -6,9 +6,9 @@ import checkoutPage from '../../../support/pages/CheckoutPage'
 
 describe('Checkout', () => {
   it('TC23 - Endereço de entrega igual ao cadastrado', { tags: ['checkout', 'ui'] }, () => {
-    Cypress.allure.feature('Checkout')
-    Cypress.allure.story('Verificação de Endereço')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('Checkout')
+    Cypress.allure?.story('Verificação de Endereço')
+    Cypress.allure?.severity('normal')
 
     const email = `testuser_${Date.now()}@test.com`
     const userData = { firstname: 'Test', lastname: 'User', company: 'QA Corp', address1: '123 Test Street', address2: '', country: 'United States', state: 'California', city: 'Los Angeles', zipcode: '90001', mobile_number: '5551234567' }

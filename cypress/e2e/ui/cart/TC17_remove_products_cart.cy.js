@@ -4,9 +4,9 @@ import cartPage     from '../../../support/pages/CartPage'
 
 describe('Carrinho', () => {
   it('TC17 - Remover produto do carrinho', { tags: ['cart', 'ui'] }, () => {
-    Cypress.allure.feature('Carrinho')
-    Cypress.allure.story('Remover Produto')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Carrinho')
+    Cypress.allure?.story('Remover Produto')
+    Cypress.allure?.severity('critical')
 
     homePage.visit()
     homePage.clickProducts()

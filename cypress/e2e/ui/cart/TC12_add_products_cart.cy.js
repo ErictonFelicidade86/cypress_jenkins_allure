@@ -4,9 +4,9 @@ import cartPage     from '../../../support/pages/CartPage'
 
 describe('Carrinho', () => {
   it('TC12 - Adicionar múltiplos produtos ao carrinho', { tags: ['smoke', 'cart', 'ui'] }, () => {
-    Cypress.allure.feature('Carrinho')
-    Cypress.allure.story('Adicionar Produtos')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Carrinho')
+    Cypress.allure?.story('Adicionar Produtos')
+    Cypress.allure?.severity('critical')
 
     homePage.visit()
     homePage.clickProducts()

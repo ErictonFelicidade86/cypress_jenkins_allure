@@ -15,9 +15,9 @@ describe('Autenticação', () => {
   })
 
   it('TC04 - Logout do usuário autenticado', { tags: ['auth', 'ui'] }, () => {
-    Cypress.allure.feature('Autenticação')
-    Cypress.allure.story('Logout')
-    Cypress.allure.severity('normal')
+    Cypress.allure?.feature('Autenticação')
+    Cypress.allure?.story('Logout')
+    Cypress.allure?.severity('normal')
 
     cy.loginViaUI(email, password)
     cy.verifyLoggedIn()

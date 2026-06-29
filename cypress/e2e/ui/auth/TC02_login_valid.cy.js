@@ -15,9 +15,9 @@ describe('Autenticação', () => {
   })
 
   it('TC02 - Login com email e senha corretos', { tags: ['smoke', 'auth', 'ui'] }, () => {
-    Cypress.allure.feature('Autenticação')
-    Cypress.allure.story('Login')
-    Cypress.allure.severity('critical')
+    Cypress.allure?.feature('Autenticação')
+    Cypress.allure?.story('Login')
+    Cypress.allure?.severity('critical')
 
     homePage.visit()
     homePage.verifyPageLoaded()
