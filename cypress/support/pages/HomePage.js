@@ -42,4 +42,9 @@ class HomePage {
     cy.get('h2').contains('Subscription').should('be.visible')
   }
 
-  addRecommendedItemToCart() 
+  addRecommendedItemToCart() {
+    cy.get('#recommended-item-carousel').find('.add-to-cart').first().click()
+  }
+}
+
+module.exports = new HomePage()

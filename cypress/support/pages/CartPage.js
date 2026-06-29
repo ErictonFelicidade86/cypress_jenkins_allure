@@ -51,4 +51,4 @@ class CartPage {
   }
 }
 
-mod
+module.exports = new CartPage()

@@ -54,4 +54,4 @@ class CheckoutPage {
   }
 }
 
-m
+module.exports = new CheckoutPage()

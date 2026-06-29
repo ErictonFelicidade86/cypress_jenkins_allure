@@ -79,4 +79,12 @@ class ProductsPage {
     cy.get('#name').type(name)
     cy.get('#email').type(email)
     cy.get('#review').type(review)
-    cy.get('#button-revie
+    cy.get('#button-review').click()
+  }
+
+  verifyReviewSuccess() {
+    cy.get('.alert-success').should('contain', 'Thank you for your review.')
+  }
+}
+
+module.exports = new ProductsPage()

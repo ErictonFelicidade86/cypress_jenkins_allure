@@ -64,4 +64,14 @@ class LoginPage {
   clickCreateAccount() { cy.get('[data-qa="create-account"]').click() }
 
   verifyAccountCreated() {
-    cy.contains('b', 'Account Created!').should(
+    cy.contains('b', 'Account Created!').should('be.visible')
+  }
+
+  clickContinue() { cy.get('[data-qa="continue-button"]').click() }
+
+  verifyAccountDeleted() {
+    cy.contains('b', 'Account Deleted!').should('be.visible')
+  }
+}
+
+module.exports = new LoginPage()

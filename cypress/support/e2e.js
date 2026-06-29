@@ -11,4 +11,14 @@ Cypress.Commands.overwrite('visit', (originalFn, url, options = {}) => {
   return originalFn(url, { failOnStatusCode: false, ...options })
 })
 
-beforeE
+beforeEach(() => {
+  if (Cypress.env('allure') && Cypress.allure) {
+    Cypress.allure.startStep(`Acessando: ${Cypress.currentTest.title}`)
+  }
+})
+
+afterEach(() => {
+  if (Cypress.env('allure') && Cypress.allure) {
+    Cypress.allure.endStep()
+  }
+})

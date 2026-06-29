@@ -35,4 +35,7 @@ describe('API - Busca de Produtos', () => {
     }).then((res) => {
       const body = typeof res.body === 'string' ? JSON.parse(res.body) : res.body
       expect(body.responseCode).to.eq(400)
-      expect(body.message).to.contain('search_product param
+      expect(body.message).to.contain('search_product parameter is missing')
+    })
+  })
+})

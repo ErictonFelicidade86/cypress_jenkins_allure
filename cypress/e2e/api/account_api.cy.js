@@ -105,4 +105,10 @@ describe('API - Conta de Usuário', () => {
         expect(body.user.email).to.eq(email)
         expect(body.user).to.include.keys('id', 'name', 'email')
         // Log das chaves reais retornadas pela API (útil para debug)
-        cy.log('
+        cy.log('Chaves do user:', Object.keys(body.user).join(', '))
+
+        cy.deleteUserViaApi(email, password)
+      })
+    })
+  })
+})
