@@ -27,6 +27,7 @@ jobs:
         with:
           spec: cypress/e2e/api/**/*.cy.js
           browser: chrome
+          install-command: yarn install --frozen-lockfile
         env:
           CYPRESS_allure: true
 
@@ -56,6 +57,7 @@ jobs:
         with:
           spec: cypress/e2e/ui/${{ matrix.module }}/**/*.cy.js
           browser: chrome
+          install-command: yarn install --frozen-lockfile
         env:
           CYPRESS_allure: true
 
@@ -161,40 +163,19 @@ jobs:
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
 
   # ────────────────────────────────────────────────────────────
-  # JOB 5 — Relatório Allure do GitHub Actions (preview rápido)
+  # JOB 5 — Resumo final do pipeline
+  # (Allure Report é gerado no Jenkins após o deploy)
   # ────────────────────────────────────────────────────────────
-  allure-report-gh:
-    name: "📊 Allure Report (GitHub Pages)"
+  pipeline-summary:
+    name: "✅ Pipeline Summary"
     runs-on: ubuntu-latest
     needs: [api-tests, ui-tests]
     if: always()
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Download todos os resultados Allure
-        uses: actions/download-artifact@v4
-        with:
-          pattern: allure-results-*
-          path: allure-results/
-          merge-multiple: true
-
-      - name: Gerar Allure Report
-        uses: simple-elf/allure-report-action@master
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          keep_reports: 30
-
-      - name: Publicar no GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-history
-
-      - name: Link do relatório no resumo
+      - name: Resumo do pipeline
         run: |
-          echo "### 📊 Allure Report disponível!" >> $GITHUB_STEP_SUMMARY
-          echo "🔗 https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Pipeline GitHub Actions finalizado!" >> $GITHUB_STEP_SUMMARY
+          echo "O relatório Allure completo será gerado pelo **Jenkins** após a execução da esteira." >> $GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
