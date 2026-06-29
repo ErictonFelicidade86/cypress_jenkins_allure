@@ -5,9 +5,13 @@ import './commands'
 Cypress.on('uncaught:exception', () => false)
 
 beforeEach(() => {
-  Cypress.allure.startStep(`Acessando: ${Cypress.currentTest.title}`)
+  if (Cypress.env('allure') && Cypress.allure) {
+    Cypress.allure.startStep(`Acessando: ${Cypress.currentTest.title}`)
+  }
 })
 
 afterEach(() => {
-  Cypress.allure.endStep()
+  if (Cypress.env('allure') && Cypress.allure) {
+    Cypress.allure.endStep()
+  }
 })
