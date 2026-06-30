@@ -29,16 +29,7 @@ jobs:
           spec: cypress/e2e/api/**/*.cy.js
           browser: chrome
           install-command: yarn install --frozen-lockfile
-        env:
-          CYPRESS_allure: true
-
-      - name: Upload Allure Results — API
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: allure-results-api
-          path: allure-results/
-          retention-days: 7
+        # Allure é gerado apenas no Jenkins — não aqui
 
   # ────────────────────────────────────────────────────────────
   # JOB 2 — Build & Push Docker Image (só roda se API passou)
