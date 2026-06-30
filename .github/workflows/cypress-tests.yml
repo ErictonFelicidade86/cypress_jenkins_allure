@@ -1,4 +1,5 @@
-name: Cypress E2E & API Tests → Docker Build → Jenkins Deploy
+name: API Tests → Docker Build → Jenkins Deploy
+# UI tests rodam apenas no Jenkins (evita redirect loop em IPs de CI)
 
 on:
   push:
@@ -40,50 +41,12 @@ jobs:
           retention-days: 7
 
   # ────────────────────────────────────────────────────────────
-  # JOB 2 — Testes de UI (Frontend) em paralelo por módulo
-  # ────────────────────────────────────────────────────────────
-  ui-tests:
-    name: "🖥️ UI Tests — ${{ matrix.module }}"
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        module: [auth, products, cart, checkout, misc]
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run UI Tests — ${{ matrix.module }}
-        uses: cypress-io/github-action@v6
-        with:
-          spec: cypress/e2e/ui/${{ matrix.module }}/**/*.cy.js
-          browser: chrome
-          install-command: yarn install --frozen-lockfile
-        env:
-          CYPRESS_allure: true
-
-      - name: Upload Allure Results — UI ${{ matrix.module }}
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: allure-results-ui-${{ matrix.module }}
-          path: allure-results/
-          retention-days: 7
-
-      - name: Upload Screenshots on Failure
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: screenshots-${{ matrix.module }}
-          path: cypress/screenshots/
-          retention-days: 3
-
-  # ────────────────────────────────────────────────────────────
-  # JOB 3 — Build & Push Docker Image (só roda se tudo passou)
+  # JOB 2 — Build & Push Docker Image (só roda se API passou)
   # ────────────────────────────────────────────────────────────
   docker-build-push:
     name: "🐳 Build & Push Docker Image → ghcr.io"
     runs-on: ubuntu-latest
-    needs: [api-tests, ui-tests]   # ← aguarda os dois jobs acima
+    needs: [api-tests]   # ← aguarda apenas API tests
     if: success() && github.ref == 'refs/heads/main'
     permissions:
       contents: read
@@ -172,13 +135,15 @@ jobs:
   pipeline-summary:
     name: "✅ Pipeline Summary"
     runs-on: ubuntu-latest
-    needs: [api-tests, ui-tests]
+    needs: [api-tests]
     if: always()
 
     steps:
       - name: Resumo do pipeline
         run: |
           echo "### ✅ Pipeline GitHub Actions finalizado!" >> $GITHUB_STEP_SUMMARY
-          echo "O relatório Allure completo será gerado pelo **Jenkins** após a execução da esteira." >> $GITHUB_STEP_SUMMARY
+          echo "- **API Tests**: validados no GitHub Actions" >> $GITHUB_STEP_SUMMARY
+          echo "- **UI Tests**: executados exclusivamente no **Jenkins** (evita bloqueio de IP em CI)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Allure Report**: gerado pelo Jenkins após execução completa" >> $GITHUB_STEP_SUMMARY
           echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "**Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
