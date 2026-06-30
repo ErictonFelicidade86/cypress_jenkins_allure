@@ -5,7 +5,7 @@ pipeline {
     parameters {
         string(
             name: 'DOCKER_IMAGE',
-            defaultValue: 'ghcr.io/SEU_ORG/cypress_jenkins_allure/cypress-runner:latest',
+            defaultValue: 'ghcr.io/erictonfelicidade86/cypress_jenkins_allure/cypress-runner:latest',
             description: 'Imagem Docker validada pelo GitHub Actions'
         )
         string(
@@ -43,10 +43,10 @@ pipeline {
                         usernameVariable: 'GHCR_USER',
                         passwordVariable: 'GHCR_TOKEN'
                     )]) {
-                        sh "echo ${GHCR_TOKEN} | docker login ghcr.io -u ${GHCR_USER} --password-stdin"
+                        powershell "echo \$env:GHCR_TOKEN | docker login ghcr.io -u \$env:GHCR_USER --password-stdin"
                     }
 
-                    sh "docker pull ${params.DOCKER_IMAGE}"
+                    powershell "docker pull ${params.DOCKER_IMAGE}"
                     echo "✅ Imagem baixada com sucesso"
                 }
             }
@@ -55,8 +55,11 @@ pipeline {
         // ── Stage 2: Preparação do ambiente ──────────────────────────────────
         stage('Prepare Environment') {
             steps {
-                sh "rm -rf ${ALLURE_RESULTS} ${ALLURE_REPORT} || true"
-                sh "mkdir -p ${ALLURE_RESULTS}"
+                powershell """
+                    if (Test-Path allure-results) { Remove-Item -Recurse -Force allure-results }
+                    if (Test-Path allure-report)  { Remove-Item -Recurse -Force allure-report }
+                    New-Item -ItemType Directory -Force -Path allure-results | Out-Null
+                """
                 echo "✅ Ambiente limpo e pronto"
             }
         }
@@ -65,24 +68,20 @@ pipeline {
         stage('API Tests (Backend)') {
             steps {
                 echo "🔌 Executando testes de API..."
-                sh """
-                    docker run --rm \
-                        -v \$(pwd)/allure-results:/cypress-automation/allure-results \
-                        -e CYPRESS_allure=true \
-                        -e CYPRESS_baseUrl=${CYPRESS_baseUrl} \
-                        ${params.DOCKER_IMAGE} \
-                        npx cypress run \
-                            --spec "cypress/e2e/api/**/*.cy.js" \
+                powershell """
+                    \$ws = (Get-Location).Path -replace '\\\\', '/'
+                    docker run --rm `
+                        -v "\${ws}/allure-results:/cypress-automation/allure-results" `
+                        -e CYPRESS_allure=true `
+                        -e CYPRESS_baseUrl=${CYPRESS_baseUrl} `
+                        ${params.DOCKER_IMAGE} `
+                        npx cypress run `
+                            --spec "cypress/e2e/api/**/*.cy.js" `
                             --reporter spec
                 """
             }
             post {
-                always {
-                    echo "📁 Resultados API coletados em allure-results/"
-                }
-                failure {
-                    echo "❌ Falhas encontradas nos testes de API"
-                }
+                failure { echo "❌ Falhas encontradas nos testes de API" }
             }
         }
 
@@ -91,76 +90,81 @@ pipeline {
             parallel {
                 stage('Auth') {
                     steps {
-                        sh """
-                            docker run --rm \
-                                -v \$(pwd)/allure-results:/cypress-automation/allure-results \
-                                -v \$(pwd)/cypress/screenshots:/cypress-automation/cypress/screenshots \
-                                -v \$(pwd)/cypress/videos:/cypress-automation/cypress/videos \
-                                -e CYPRESS_allure=true \
-                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} \
-                                ${params.DOCKER_IMAGE} \
-                                npx cypress run \
-                                    --spec "cypress/e2e/ui/auth/**/*.cy.js" \
+                        powershell """
+                            \$ws = (Get-Location).Path -replace '\\\\', '/'
+                            docker run --rm `
+                                -v "\${ws}/allure-results:/cypress-automation/allure-results" `
+                                -v "\${ws}/cypress/screenshots:/cypress-automation/cypress/screenshots" `
+                                -v "\${ws}/cypress/videos:/cypress-automation/cypress/videos" `
+                                -e CYPRESS_allure=true `
+                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} `
+                                ${params.DOCKER_IMAGE} `
+                                npx cypress run `
+                                    --spec "cypress/e2e/ui/auth/**/*.cy.js" `
                                     --browser chrome --headless
                         """
                     }
                 }
                 stage('Products') {
                     steps {
-                        sh """
-                            docker run --rm \
-                                -v \$(pwd)/allure-results:/cypress-automation/allure-results \
-                                -v \$(pwd)/cypress/screenshots:/cypress-automation/cypress/screenshots \
-                                -e CYPRESS_allure=true \
-                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} \
-                                ${params.DOCKER_IMAGE} \
-                                npx cypress run \
-                                    --spec "cypress/e2e/ui/products/**/*.cy.js" \
+                        powershell """
+                            \$ws = (Get-Location).Path -replace '\\\\', '/'
+                            docker run --rm `
+                                -v "\${ws}/allure-results:/cypress-automation/allure-results" `
+                                -v "\${ws}/cypress/screenshots:/cypress-automation/cypress/screenshots" `
+                                -e CYPRESS_allure=true `
+                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} `
+                                ${params.DOCKER_IMAGE} `
+                                npx cypress run `
+                                    --spec "cypress/e2e/ui/products/**/*.cy.js" `
                                     --browser chrome --headless
                         """
                     }
                 }
                 stage('Cart') {
                     steps {
-                        sh """
-                            docker run --rm \
-                                -v \$(pwd)/allure-results:/cypress-automation/allure-results \
-                                -v \$(pwd)/cypress/screenshots:/cypress-automation/cypress/screenshots \
-                                -e CYPRESS_allure=true \
-                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} \
-                                ${params.DOCKER_IMAGE} \
-                                npx cypress run \
-                                    --spec "cypress/e2e/ui/cart/**/*.cy.js" \
+                        powershell """
+                            \$ws = (Get-Location).Path -replace '\\\\', '/'
+                            docker run --rm `
+                                -v "\${ws}/allure-results:/cypress-automation/allure-results" `
+                                -v "\${ws}/cypress/screenshots:/cypress-automation/cypress/screenshots" `
+                                -e CYPRESS_allure=true `
+                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} `
+                                ${params.DOCKER_IMAGE} `
+                                npx cypress run `
+                                    --spec "cypress/e2e/ui/cart/**/*.cy.js" `
                                     --browser chrome --headless
                         """
                     }
                 }
                 stage('Checkout') {
                     steps {
-                        sh """
-                            docker run --rm \
-                                -v \$(pwd)/allure-results:/cypress-automation/allure-results \
-                                -v \$(pwd)/cypress/screenshots:/cypress-automation/cypress/screenshots \
-                                -e CYPRESS_allure=true \
-                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} \
-                                ${params.DOCKER_IMAGE} \
-                                npx cypress run \
-                                    --spec "cypress/e2e/ui/checkout/**/*.cy.js" \
+                        powershell """
+                            \$ws = (Get-Location).Path -replace '\\\\', '/'
+                            docker run --rm `
+                                -v "\${ws}/allure-results:/cypress-automation/allure-results" `
+                                -v "\${ws}/cypress/screenshots:/cypress-automation/cypress/screenshots" `
+                                -e CYPRESS_allure=true `
+                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} `
+                                ${params.DOCKER_IMAGE} `
+                                npx cypress run `
+                                    --spec "cypress/e2e/ui/checkout/**/*.cy.js" `
                                     --browser chrome --headless
                         """
                     }
                 }
                 stage('Misc') {
                     steps {
-                        sh """
-                            docker run --rm \
-                                -v \$(pwd)/allure-results:/cypress-automation/allure-results \
-                                -v \$(pwd)/cypress/screenshots:/cypress-automation/cypress/screenshots \
-                                -e CYPRESS_allure=true \
-                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} \
-                                ${params.DOCKER_IMAGE} \
-                                npx cypress run \
-                                    --spec "cypress/e2e/ui/misc/**/*.cy.js" \
+                        powershell """
+                            \$ws = (Get-Location).Path -replace '\\\\', '/'
+                            docker run --rm `
+                                -v "\${ws}/allure-results:/cypress-automation/allure-results" `
+                                -v "\${ws}/cypress/screenshots:/cypress-automation/cypress/screenshots" `
+                                -e CYPRESS_allure=true `
+                                -e CYPRESS_baseUrl=${CYPRESS_baseUrl} `
+                                ${params.DOCKER_IMAGE} `
+                                npx cypress run `
+                                    --spec "cypress/e2e/ui/misc/**/*.cy.js" `
                                     --browser chrome --headless
                         """
                     }
@@ -168,17 +172,8 @@ pipeline {
             }
         }
 
-        // ── Stage 5: Gerar Allure Report ─────────────────────────────────────
-        stage('Generate Allure Report') {
-            steps {
-                echo "📊 Gerando relatório Allure..."
-                sh "allure generate ${ALLURE_RESULTS} -o ${ALLURE_REPORT} --clean"
-                echo "✅ Relatório gerado em: ${ALLURE_REPORT}/"
-            }
-        }
-
-        // ── Stage 6: Publicar Relatório ───────────────────────────────────────
-        stage('Publish Allure Report') {
+        // ── Stage 5: Gerar e Publicar Allure Report ──────────────────────────
+        stage('Allure Report') {
             steps {
                 allure([
                     includeProperties: false,
@@ -194,37 +189,19 @@ pipeline {
     // ── Post: ações após o pipeline ───────────────────────────────────────────
     post {
         always {
-            // Arquiva screenshots e vídeos para análise de falhas
             archiveArtifacts(
                 artifacts: 'cypress/screenshots/**,cypress/videos/**',
                 allowEmptyArchive: true
             )
-
-            // Remove containers Docker órfãos
-            sh "docker container prune -f || true"
         }
-
         success {
-            echo """
-            ╔══════════════════════════════════════╗
-            ║  ✅ PIPELINE CONCLUÍDO COM SUCESSO   ║
-            ║  Relatório disponível no Jenkins     ║
-            ╚══════════════════════════════════════╝
-            """
+            echo "✅ PIPELINE CONCLUÍDO COM SUCESSO — Relatório disponível no Jenkins"
         }
-
         failure {
-            echo """
-            ╔══════════════════════════════════════╗
-            ║  ❌ PIPELINE COM FALHAS              ║
-            ║  Verifique o Allure Report           ║
-            ╚══════════════════════════════════════╝
-            """
+            echo "❌ PIPELINE COM FALHAS — Verifique o Allure Report"
         }
-
         cleanup {
-            // Remove a imagem Docker local após execução para economizar espaço
-            sh "docker rmi ${params.DOCKER_IMAGE} || true"
+            powershell "docker rmi ${params.DOCKER_IMAGE} 2>null; exit 0"
             echo "🧹 Limpeza concluída"
         }
     }
