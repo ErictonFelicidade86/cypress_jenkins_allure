@@ -100,17 +100,20 @@ jobs:
 
     steps:
       - name: Disparar webhook no Jenkins
+        continue-on-error: true   # não bloqueia pipeline se Jenkins não estiver acessível
         run: |
-          curl -s -X POST "${{ secrets.JENKINS_URL }}/job/${{ secrets.JENKINS_JOB_NAME }}/build" \
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            "${{ secrets.JENKINS_URL }}/job/${{ secrets.JENKINS_JOB_NAME }}/buildWithParameters" \
             --user "${{ secrets.JENKINS_USER }}:${{ secrets.JENKINS_TOKEN }}" \
-            --data-urlencode json='{
-              "parameter": [
-                {"name": "DOCKER_IMAGE", "value": "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"},
-                {"name": "GIT_COMMIT",   "value": "${{ github.sha }}"},
-                {"name": "TRIGGERED_BY", "value": "github-actions"}
-              ]
-            }'
-          echo "Jenkins acionado com sucesso!"
+            --data "DOCKER_IMAGE=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" \
+            --data "GIT_COMMIT=${{ github.sha }}" \
+            --data "TRIGGERED_BY=github-actions")
+          echo "HTTP status: $HTTP_CODE"
+          if [[ "$HTTP_CODE" == "201" || "$HTTP_CODE" == "200" ]]; then
+            echo "✅ Jenkins acionado com sucesso!"
+          else
+            echo "⚠️ Jenkins não acessível (HTTP $HTTP_CODE) — acione manualmente se necessário."
+          fi
 
       - name: Resumo do trigger
         run: |
