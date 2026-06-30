@@ -1,4 +1,4 @@
-FROM cypress/included:13.6.0
+FROM cypress/included:14.3.0
 
 WORKDIR /cypress-automation
 
@@ -8,7 +8,7 @@ RUN corepack enable
 # Copia manifests primeiro para cachear a camada de dependências
 # (se package.json e yarn.lock não mudaram, Docker reutiliza o cache)
 COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --ignore-engines
 
 COPY . .
 
